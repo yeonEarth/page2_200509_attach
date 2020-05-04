@@ -1,0 +1,348 @@
+package Page2_1;
+
+
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.page2_200503_mj.R;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+
+public class Page2_1_Fragment extends Fragment {
+
+    Page2_1_MainActivity mainActivity;
+    private String  station, subject, isMake;
+
+    //역 이름을 받아서 지역코드랑 시군구코드 받기 위한 배열
+    int station_code = 49;
+    String[] arr_line = null;
+    String[] _name = new String[station_code];           //txt에서 받은 역이름
+    String[] _areaCode = new String[station_code];       //txt에서 받은 지역코드
+    String[] _sigunguCode = new String[station_code];    //txt에서 받은 시군구코드
+    String  areaCode, sigunguCode;
+    String returnResult, url;
+    String Url_front = "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory&fname=";
+
+
+    String name_1[] = new String[5];  //returnResult를 줄바꿈 단위로 쪼개서 넣은 배열/ name_1[0]에는 한 관광지의 이름,url,contentId,위치가 다 들어가 있다.
+    String name_2[] = new String[3];  //name_1를 "  " 단위로 쪼개서 넣은 배열/ [0]= contentID/ [1]=mapx/ [2]에= mapy/ [3]= img_Url/ [4]= name이 들어가 있다.
+    int length = name_1.length;
+
+
+    //xml 파싱한 값을 분류해서 쪼개 넣음
+    String name[] = new String[20];        //관광지 이름
+    String img_Url[] = new String[20];     //이미지 URL
+    String contentid[] = new String[20];   //관광지ID
+
+
+    //리사이클러뷰에 연결할 데이터
+    List<Recycler_item> items = new ArrayList<>();
+
+
+    public Page2_1_Fragment() { }
+
+
+    public static  Page2_1_Fragment newInstance(String subject, String station, String isMake) {
+        Page2_1_Fragment fragment = new  Page2_1_Fragment();
+        Bundle args = new Bundle();
+        args.putString("subject", subject);
+        args.putString("station", station);
+        args.putString("isMake", isMake);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+
+    //액티비티와 프래그먼트를 붙일 때 호출되는 메소드,
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mainActivity = (Page2_1_MainActivity) getActivity();
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            station = getArguments().getString("station");
+            subject = getArguments().getString("subject");
+           isMake = getArguments().getString("isMake");
+        }
+    }
+
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_page2, container, false);
+
+
+        Button btn = v.findViewById(R.id.page2_1_fragment_more_btn);
+        btn.setText("'" + station + "'의 다른 관광지 더 보기");
+
+
+        //리사이클러뷰 구현 부분
+        RecyclerView recyclerView = v.findViewById(R.id.page2_1_fragment_recyclerview);
+        recyclerView.setLayoutManager( new LinearLayoutManager(mainActivity));
+        recyclerView.setHasFixedSize(true);
+
+
+        // mkae = api 연결 // delete = api 연결 X
+        if(isMake.equals("make2")) {
+
+            //txt 값 읽기
+            settingList();
+
+            //전달된 역의 지역코드, 시군구코드 찾기
+            compareStation();
+
+            //관광 api 연결
+            SearchTask task = new SearchTask();
+            try {
+                String RESULT = task.execute().get();
+                Log.i("전달 받은 값", RESULT);
+
+
+                //사진링크, 타이틀(관광명), 분야뭔지 분리
+                name_1 = RESULT.split("\n");
+
+                for (int i = 0; i < length; i++) {
+                    name_2 = name_1[i].split("  ");
+
+                    //img_Url이 없는 경우도 있기 때문에, length = 3 = 있음/ 2 = 없음
+                    if (name_2.length == 3) {
+                        contentid[i] = name_2[0];
+                        img_Url[i] = name_2[1];
+                        name[i] = name_2[2];
+                    } else {
+                        contentid[i] = name_2[0];
+                        img_Url[i] = null;
+                        name[i] = name_2[1];
+                    }
+                }
+
+                Recycler_item[] item = new Recycler_item[length];
+
+                for (int i = 0; i < length; i++) {
+                    items.add(new Recycler_item(Url_front + img_Url[i], name[i], contentid[i]));
+                }
+
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            } catch (ExecutionException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        //리사이클러뷰 연결
+        recyclerView.setAdapter(new Page2_1_CardView_adapter(items));
+
+        return v;
+    }
+
+
+
+    //이 클래스는 어댑터와 서로 주고받으며 쓰는 클래스임
+    public class Recycler_item {
+        String image;
+        String title;
+        String contentviewID;;
+
+        String getImage() {
+            return this.image;
+        }
+
+        String getTitle() {
+            return this.title;
+        }
+
+        String getContentviewID() {
+            return this.contentviewID;
+        }
+
+        Recycler_item(String image, String title, String contentviewID) {
+            this.image = image;
+            this.title = title;
+            this.contentviewID = contentviewID;
+        }
+    }
+
+
+
+    //앞 액티비티에서 선택된 역과 같은 역을 찾는다.
+    private void compareStation(){
+        for(int i=0; i<_name.length; i++){
+            if(station.equals(_name[i])){
+                areaCode = _areaCode[i];
+                sigunguCode = _sigunguCode[i];
+            }
+        }
+    }
+
+
+
+    //txt 돌려 역 비교할 배열 만들기(이름 지역코드 동네코드)<-로 구성
+    private void settingList(){
+        String readStr = "";
+        AssetManager assetManager = getResources().getAssets();
+        InputStream inputStream = null;
+        try{
+            inputStream = assetManager.open("station_code.txt");
+            //버퍼리더에 대한 설명 참고 : https://coding-factory.tistory.com/251
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String str = null;
+            while (((str = reader.readLine()) != null)){ readStr += str + "\n";}
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String[] arr_all = readStr.split("\n"); //txt 내용을 줄바꿈 기준으로 나눈다.
+
+        //한 줄의 값을 띄어쓰기 기준으로 나눠서, 역명/지역코드/시군구코드 배열에 넣는다.
+        for(int i=0; i <arr_all.length; i++) {
+            arr_line = arr_all[i].split(",");
+
+            _name[i] = arr_line[0];         //서울
+            _areaCode[i] = arr_line[1];     //1
+            _sigunguCode[i] = arr_line[2];  //0
+        }
+    }
+
+
+
+    //관광api 연결
+    class SearchTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            //초기화 단계에서 사용
+//            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            //Log.d("시작", "시작");
+
+            //시군구코드가 0 일 때와 0이 아닐때를 구분해서 url을 넣어준다.
+            if(sigunguCode.equals("0")){
+                url = "https://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?serviceKey=" +
+                        "7LT0Q7XeCAuzBmGUO7LmOnrkDGK2s7GZIJQdvdZ30lf7FmnTle%2BQoOqRKpjcohP14rouIrtag9KOoCZe%2BXuNxg%3D%3D" +
+                        "&pageNo=1&numOfRows=5&MobileApp=AppTest&MobileOS=ETC&arrange=B" +
+                        "&contentTypeId=12&"+
+                        "sigunguCode=" +
+                        "&areaCode=" + areaCode +
+                        "&cat1=A02&cat2=A0201&cat3=" +
+                        "&listYN=Y";
+            } else {
+                url = "https://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?serviceKey=" +
+                        "7LT0Q7XeCAuzBmGUO7LmOnrkDGK2s7GZIJQdvdZ30lf7FmnTle%2BQoOqRKpjcohP14rouIrtag9KOoCZe%2BXuNxg%3D%3D" +
+                        "&pageNo=1&numOfRows=5&MobileApp=AppTest&MobileOS=ETC&arrange=B" +
+                        "&contentTypeId=12&" +
+                        "sigunguCode=" + sigunguCode +
+                        "&areaCode=" + areaCode +
+                        "&cat1=A02&cat2=A0201&cat3=" +
+                        "&listYN=Y";
+            }
+
+            URL xmlUrl;
+            returnResult = "";
+
+            try {
+                boolean title = false;
+                boolean firstimage = false;
+                boolean item = false;
+                boolean contentid = false;
+
+                xmlUrl = new URL(url);
+                Log.d("url", url);
+                xmlUrl.openConnection().getInputStream();
+                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                XmlPullParser parser = factory.newPullParser();
+                parser.setInput(xmlUrl.openStream(), "utf-8");
+
+                int eventType = parser.getEventType();
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+                    switch (eventType) {
+                        case XmlPullParser.START_DOCUMENT:
+                            break;
+
+                        case XmlPullParser.START_TAG: {
+                            if (parser.getName().equals("item")) {
+                                item = true;
+                            }
+                            if (parser.getName().equals("contentid")) {
+                                contentid = true;
+                               // Log.d("태그 시작", "태그 시작2");
+                            }
+                            if (parser.getName().equals("firstimage")) {
+                                firstimage = true;
+                               // Log.d("태그 시작", "태그 시작3");
+                            }
+                            if (parser.getName().equals("title")) {
+                                title = true;
+                                //Log.d("태그 시작", "태그 시작4");
+                            }
+                            break;
+                        }
+
+                        case XmlPullParser.TEXT: {
+                            if (contentid) {
+                                returnResult += parser.getText() + "  ";
+                                contentid = false;
+                            }
+                            if (firstimage) {
+                                returnResult += parser.getText() + "  ";
+                                firstimage = false;
+                            }
+                            if (title) {
+                                returnResult += parser.getText() + "\n";
+                                //Log.d("태그 받음", "태그받음4");
+                                title = false;
+                            }
+                            break;
+                        }
+                        case XmlPullParser.END_TAG:
+                            if (parser.getName().equals("item")) {
+                                break;
+                            }
+                        case XmlPullParser.END_DOCUMENT:
+                            break;
+                    }
+                    eventType = parser.next();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("err", "erro");
+            }
+            Log.i("ㅇㅇㅇㅇㅇㅇㅇ", returnResult);
+            return returnResult;
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+        }
+    }
+
+
+}
