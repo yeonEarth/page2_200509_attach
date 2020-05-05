@@ -109,8 +109,11 @@ public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_View
                     selectedItems.delete(position);
                     determine_API = "delete";
                     Log.i("얘가 눌림", String.valueOf(selectedItems.get(position)) + determine_API);
-                    viewHolder.updown_img.setBackgroundResource(R.drawable.ic_down_btn);
+                    viewHolder.updown_img.setBackgroundResource(R.drawable.ic_up_btn);
+
+
                     //viewHolder.vp_bg.setVisibility(View.GONE);
+                    //notifyItemChanged(position);
 
 
                 } else {
@@ -119,8 +122,11 @@ public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_View
                     determine_API = "make";
                     Log.i("얘가 눌림><", String.valueOf(selectedItems.get(position)) + determine_API+
                             Integer.toString(viewHolder.vp_bg.getVisibility()));
-                    viewHolder.updown_img.setBackgroundResource(R.drawable.ic_up_btn);
+                    viewHolder.updown_img.setBackgroundResource(R.drawable.ic_down_btn);
+
+
                     //viewHolder.vp_bg.setVisibility(View.VISIBLE);
+
                 }
 
                 if (prePosition != -1) notifyItemChanged(prePosition);
