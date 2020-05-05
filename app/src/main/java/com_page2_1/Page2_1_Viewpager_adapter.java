@@ -1,10 +1,7 @@
-package Page2_1;
+package com_page2_1;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -13,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -27,24 +25,27 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 
 
-public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_Viewpager_adapter.ViewHolder> {
+public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_Viewpager_adapter.ViewHolder> implements Page2_1_MainActivity.Recyclerview_Rearrange {
 
     //뷰페이져 관련
     private Context context;
     private ArrayList<course> items;
     private FragmentManager fragmentManager;
+    private Page2_1_MainActivity.Recyclerview_Rearrange recyclerview_rearrange;
 
 
     //뷰페이져 화면 up&down 관련
     private String determine_API = "delete";
     private int prePosition = -1;
-    private static SparseBooleanArray selectedItems = new SparseBooleanArray();
+    private boolean isFirst = true;
+    public static SparseBooleanArray selectedItems = new SparseBooleanArray();
 
 
     //Activity와 어댑터를 연결
-    public Page2_1_Viewpager_adapter(FragmentManager fragmentManager, ArrayList<course> items) {
+    public Page2_1_Viewpager_adapter(FragmentManager fragmentManager, ArrayList<course> items, Page2_1_MainActivity.Recyclerview_Rearrange recyclerview_rearrange) {
         this.items = items;
         this.fragmentManager = fragmentManager;
+        this.recyclerview_rearrange = recyclerview_rearrange;
     }
 
 
@@ -56,26 +57,38 @@ public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_View
         return new ViewHolder(v);
     }
 
+
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
 
         //첫번째 아이템은 펼쳐져서 보임
-//         if(isFirst) {
-//             if(i==0){
-//                 viewHolder.vp_bg.getLayoutParams().height = 450;
-//                 viewHolder.vp_bg.requestLayout();
-//                 selectedItems.put(i, true);
-//                 prePosition = i;
-//                 txt = "make";
-//             }
-//             else if(i<3){
-//                 txt = "delete";
-//             }
-//             else if(i==3){
-//                 txt = "delete";
-//                 isFirst = false;
-//             }
-//        }
+         if(isFirst) {
+             if(position==0){
+
+                 //height 값을 임의로 준다.
+                 int dpValue = 380;
+                 float d = context.getResources().getDisplayMetrics().density;
+                 int height = (int) (dpValue * d);
+                 viewHolder.vp_bg.getLayoutParams().height = height;
+                 viewHolder.vp_bg.requestLayout();
+
+                 selectedItems.put(position, true);
+                 prePosition = position;
+
+                 //인터넷 유무 체크
+                 int isNetworkConnect = NetworkStatus.getConnectivityStatus(context);
+                 if(isNetworkConnect == 3) {
+                     Toast.makeText(context, "인터넷 연결이 필요합니다.", Toast.LENGTH_SHORT).show();
+                     determine_API = "delete";
+                 } else
+                     determine_API = "make";
+
+             }
+             else{
+                 determine_API = "delete";
+                 isFirst = false;
+             }
+        }
 
 
 
@@ -105,28 +118,23 @@ public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_View
                 * preposition 은 이전에 눌렀던 화면 위치를 저장하는 변수.
                 * */
 
-                if(selectedItems.get(position)){   //true
+                if(selectedItems.get(position)){
                     selectedItems.delete(position);
                     determine_API = "delete";
-                    Log.i("얘가 눌림", String.valueOf(selectedItems.get(position)) + determine_API);
-                    viewHolder.updown_img.setBackgroundResource(R.drawable.ic_up_btn);
+                }
 
+                else {
 
-                    //viewHolder.vp_bg.setVisibility(View.GONE);
-                    //notifyItemChanged(position);
+                    //인터넷 유무 체크
+                    int isNetworkConnect = NetworkStatus.getConnectivityStatus(context);
+                    if(isNetworkConnect == 3) {
+                        Toast.makeText(context, "인터넷 연결이 필요합니다.", Toast.LENGTH_SHORT).show();
+                        determine_API = "delete";
+                    } else
+                        determine_API = "make";
 
-
-                } else {
                     selectedItems.delete(prePosition);
                     selectedItems.put(position, true);
-                    determine_API = "make";
-                    Log.i("얘가 눌림><", String.valueOf(selectedItems.get(position)) + determine_API+
-                            Integer.toString(viewHolder.vp_bg.getVisibility()));
-                    viewHolder.updown_img.setBackgroundResource(R.drawable.ic_down_btn);
-
-
-                    //viewHolder.vp_bg.setVisibility(View.VISIBLE);
-
                 }
 
                 if (prePosition != -1) notifyItemChanged(prePosition);
@@ -137,9 +145,16 @@ public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_View
     }
 
 
-
     @Override
     public int getItemCount() { return items.size(); }
+
+
+
+    //뒤로가기 눌렀을때 현재 확장되어있는 레이아웃을 닫아준다.
+    @Override
+    public void onRearrange() {
+        selectedItems.clear();
+    }
 
 
 
@@ -175,7 +190,7 @@ public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_View
         private void changeVisibility(final boolean isExpanded) {
 
             // height 값을 dp로 지정해서 넣고싶으면 아래 소스를 이용
-            int dpValue = 400;
+            int dpValue = 380;
             float d = context.getResources().getDisplayMetrics().density;
             int height = (int) (dpValue * d);
 
@@ -189,6 +204,7 @@ public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_View
                     vp_bg.getLayoutParams().height = value;                        // imageView의 높이 변경
                     vp_bg.requestLayout();
                     vp.setVisibility(isExpanded ? View.VISIBLE : View.INVISIBLE);   // imageView가 실제로 사라지게하는 부분
+                    updown_img.setBackgroundResource(isExpanded ? R.drawable.ic_down_btn : R.drawable.ic_up_btn);
                 }
             });
             va.start();
@@ -202,8 +218,9 @@ public class Page2_1_Viewpager_adapter extends RecyclerView.Adapter<Page2_1_View
     //프래그먼트&탭레이아웃 연결 어댑터
     public class BannerPagerAdapter extends FragmentStatePagerAdapter {
 
+        //api를 연결할지 말지를 결정 (delete of make 의 값을 넣음)
+        String determine_API;
         int number;
-        String determine_API;   //api를 연결할지 말지를 결정 (delete of make 의 값을 넣음)
 
         //뷰페이저와 프래그먼트를 연결해주는 부분
         public BannerPagerAdapter(FragmentManager fm, int i, String determine_API) {

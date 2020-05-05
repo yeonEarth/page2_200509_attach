@@ -1,10 +1,8 @@
-package Page2_1;
+package com_page2_1;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -18,6 +16,7 @@ import java.util.ArrayList;
 public class Page2_1_MainActivity extends AppCompatActivity {
     Page2_1_Viewpager_adapter viewpager_adapter;
     ArrayList<course> items = new ArrayList<>();
+    Recyclerview_Rearrange recyclerview_rearrange;
 
     //관광지 주제별 코스를 저장하는 배열
     String getSubject;
@@ -26,7 +25,6 @@ public class Page2_1_MainActivity extends AppCompatActivity {
     String[] st3;
     String[] st4;
 
-    //RequestManager requestManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,24 +36,25 @@ public class Page2_1_MainActivity extends AppCompatActivity {
         getSubject = intent.getStringExtra("subject_name");
         Toast.makeText(getApplicationContext(), getSubject, Toast.LENGTH_SHORT).show();
 
-        //requestManager = Glide.with(getApplicationContext());
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.page2_1_recyclerview);
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.page2_1_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+
         //뷰페이저 어댑터를 연결해주면서 프래그먼트 연결
-        viewpager_adapter = new Page2_1_Viewpager_adapter(getSupportFragmentManager(), items);
+        viewpager_adapter = new Page2_1_Viewpager_adapter(getSupportFragmentManager(), items, recyclerview_rearrange);
         recyclerView.setAdapter(viewpager_adapter);
+
 
         //뒤로가기 버튼 구현
         ImageView back_btn = (ImageView) findViewById(R.id.page2_1_back_btn);
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                viewpager_adapter.onRearrange();
                 onBackPressed();
             }
         });
-
 
         getData();
     }
@@ -125,10 +124,25 @@ public class Page2_1_MainActivity extends AppCompatActivity {
         // adapter의 값이 변경(+추가) 되었다는 것을 알려줌 .
         viewpager_adapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        viewpager_adapter.onRearrange();
+    }
+
+
+    //뒤로가기 누르면 확장된 레이아웃을 닫는 인터페이스
+    public interface Recyclerview_Rearrange {
+        void onRearrange();
+    }
+
+
 }
 
-
 class course  {
+
+    //관광지 주제, 추천코스의 역1, 역2, 역3, 여4
     String subject, st1, st2, st3, st4;
 
     public course(String subject, String st1, String st2, String st3, String st4) {

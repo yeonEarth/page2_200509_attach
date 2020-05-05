@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import Page2_1.Page2_1_MainActivity;
+import com_page2_1.Page2_1_MainActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

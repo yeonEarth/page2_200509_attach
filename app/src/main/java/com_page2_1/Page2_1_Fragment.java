@@ -1,4 +1,4 @@
-package Page2_1;
+package com_page2_1;
 
 
 import android.content.Context;
@@ -30,6 +30,7 @@ public class Page2_1_Fragment extends Fragment {
 
     Page2_1_MainActivity mainActivity;
     private String  station, subject, isMake;
+    private String contentTypeId, cat1, cat2;
 
     //역 이름을 받아서 지역코드랑 시군구코드 받기 위한 배열
     int station_code = 49;
@@ -42,9 +43,9 @@ public class Page2_1_Fragment extends Fragment {
     String Url_front = "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory&fname=";
 
 
-    String name_1[] = new String[5];  //returnResult를 줄바꿈 단위로 쪼개서 넣은 배열/ name_1[0]에는 한 관광지의 이름,url,contentId,위치가 다 들어가 있다.
+    String name_1[];  //returnResult를 줄바꿈 단위로 쪼개서 넣은 배열/ name_1[0]에는 한 관광지의 이름,url,contentId,위치가 다 들어가 있다.
     String name_2[] = new String[3];  //name_1를 "  " 단위로 쪼개서 넣은 배열/ [0]= contentID/ [1]=mapx/ [2]에= mapy/ [3]= img_Url/ [4]= name이 들어가 있다.
-    int length = name_1.length;
+//    int length = name_1.length;
 
 
     //xml 파싱한 값을 분류해서 쪼개 넣음
@@ -63,9 +64,9 @@ public class Page2_1_Fragment extends Fragment {
     public static  Page2_1_Fragment newInstance(String subject, String station, String isMake) {
         Page2_1_Fragment fragment = new  Page2_1_Fragment();
         Bundle args = new Bundle();
-        args.putString("subject", subject);
-        args.putString("station", station);
-        args.putString("isMake", isMake);
+        args.putString("subject", subject);   //관광지 주제
+        args.putString("station", station);   //관광지 이름
+        args.putString("isMake", isMake);     //api 연결 유무
         fragment.setArguments(args);
         return fragment;
     }
@@ -86,16 +87,15 @@ public class Page2_1_Fragment extends Fragment {
         if (getArguments() != null) {
             station = getArguments().getString("station");
             subject = getArguments().getString("subject");
-           isMake = getArguments().getString("isMake");
+            isMake = getArguments().getString("isMake");
         }
     }
 
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View v = inflater.inflate(R.layout.fragment_page2, container, false);
 
 
@@ -110,7 +110,7 @@ public class Page2_1_Fragment extends Fragment {
 
 
         // mkae = api 연결 // delete = api 연결 X
-        if(isMake.equals("make2")) {
+        if(isMake.equals("make")) {
 
             //txt 값 읽기
             settingList();
@@ -118,17 +118,19 @@ public class Page2_1_Fragment extends Fragment {
             //전달된 역의 지역코드, 시군구코드 찾기
             compareStation();
 
+            //url에 들어갈 contentTypeId, cat1, cat2 코드를 찾기
+            url_code();
+
             //관광 api 연결
             SearchTask task = new SearchTask();
             try {
                 String RESULT = task.execute().get();
                 Log.i("전달 받은 값", RESULT);
 
-
                 //사진링크, 타이틀(관광명), 분야뭔지 분리
                 name_1 = RESULT.split("\n");
 
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < name_1.length; i++) {
                     name_2 = name_1[i].split("  ");
 
                     //img_Url이 없는 경우도 있기 때문에, length = 3 = 있음/ 2 = 없음
@@ -143,10 +145,9 @@ public class Page2_1_Fragment extends Fragment {
                     }
                 }
 
-                Recycler_item[] item = new Recycler_item[length];
-
-                for (int i = 0; i < length; i++) {
-                    items.add(new Recycler_item(Url_front + img_Url[i], name[i], contentid[i]));
+                //리사이클러에 들어갈 데이터를 넣는다
+                for (int i = 0; i < name_1.length; i++) {
+                    items.add(new Recycler_item(img_Url[i], name[i], contentid[i] , subject));
                 }
 
             } catch (InterruptedException ex) {
@@ -157,7 +158,7 @@ public class Page2_1_Fragment extends Fragment {
         }
 
         //리사이클러뷰 연결
-        recyclerView.setAdapter(new Page2_1_CardView_adapter(items));
+        recyclerView.setAdapter(new Page2_1_CardView_adapter(items, mainActivity));
 
         return v;
     }
@@ -168,7 +169,8 @@ public class Page2_1_Fragment extends Fragment {
     public class Recycler_item {
         String image;
         String title;
-        String contentviewID;;
+        String contentviewID;
+        String type;
 
         String getImage() {
             return this.image;
@@ -182,10 +184,15 @@ public class Page2_1_Fragment extends Fragment {
             return this.contentviewID;
         }
 
-        Recycler_item(String image, String title, String contentviewID) {
+        String getType() {
+            return this.type;
+        }
+
+        Recycler_item(String image, String title, String contentviewID, String type) {
             this.image = image;
             this.title = title;
             this.contentviewID = contentviewID;
+            this.type = type;
         }
     }
 
@@ -233,7 +240,8 @@ public class Page2_1_Fragment extends Fragment {
 
 
     //관광api 연결
-    class SearchTask extends AsyncTask<String, Void, String> {
+    class SearchTask extends AsyncTask<String, Void, String>
+    {
         @Override
         protected void onPreExecute() {
             //초기화 단계에서 사용
@@ -249,19 +257,19 @@ public class Page2_1_Fragment extends Fragment {
                 url = "https://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?serviceKey=" +
                         "7LT0Q7XeCAuzBmGUO7LmOnrkDGK2s7GZIJQdvdZ30lf7FmnTle%2BQoOqRKpjcohP14rouIrtag9KOoCZe%2BXuNxg%3D%3D" +
                         "&pageNo=1&numOfRows=5&MobileApp=AppTest&MobileOS=ETC&arrange=B" +
-                        "&contentTypeId=12&"+
-                        "sigunguCode=" +
+                        "&contentTypeId=" + contentTypeId +
+                        "&sigunguCode=" +
                         "&areaCode=" + areaCode +
-                        "&cat1=A02&cat2=A0201&cat3=" +
+                        "&cat1=" + cat1 + "&cat2=" + cat2 + "&cat3=" +
                         "&listYN=Y";
             } else {
                 url = "https://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?serviceKey=" +
                         "7LT0Q7XeCAuzBmGUO7LmOnrkDGK2s7GZIJQdvdZ30lf7FmnTle%2BQoOqRKpjcohP14rouIrtag9KOoCZe%2BXuNxg%3D%3D" +
                         "&pageNo=1&numOfRows=5&MobileApp=AppTest&MobileOS=ETC&arrange=B" +
-                        "&contentTypeId=12&" +
-                        "sigunguCode=" + sigunguCode +
+                        "&contentTypeId=" + contentTypeId +
+                        "&sigunguCode=" + sigunguCode +
                         "&areaCode=" + areaCode +
-                        "&cat1=A02&cat2=A0201&cat3=" +
+                        "&cat1=" + cat1 + "&cat2=" + cat2 + "&cat3=" +
                         "&listYN=Y";
             }
 
@@ -335,7 +343,6 @@ public class Page2_1_Fragment extends Fragment {
                 e.printStackTrace();
                 Log.e("err", "erro");
             }
-            Log.i("ㅇㅇㅇㅇㅇㅇㅇ", returnResult);
             return returnResult;
         }
         @Override
@@ -345,4 +352,55 @@ public class Page2_1_Fragment extends Fragment {
     }
 
 
+
+    //URL에 들어갈 contentTypeId, cat1, cat2를 지정하는 작업
+    private void url_code() {
+        switch (subject) {
+            case "자연":
+                contentTypeId = "12";
+                cat1 = "A01";
+                cat2 = "";
+                break;
+            case "역사":
+                contentTypeId = "12";
+                cat1 = "A02";
+                cat2 = "A0201";
+                break;
+            case "휴양":
+                contentTypeId = "12";
+                cat1 = "A02";
+                cat2 = "A0202";
+                break;
+            case "체험":
+                contentTypeId = "12";
+                cat1 = "A02";
+                cat2 = "A0203";
+                break;
+            case "산업":
+                contentTypeId = "12";
+                cat1 = "A02";
+                cat2 = "A0204";
+                break;
+            case "건축/조형":
+                contentTypeId = "12";
+                cat1 = "A02";
+                cat2 = "A0205";
+                break;
+            case "문화":
+                contentTypeId = "14";
+                cat1 = "A02";
+                cat2 = "A0206";
+                break;
+            case "레포츠":
+                contentTypeId = "28";
+                cat1 = "A03";
+                cat2 = "";
+                break;
+            default:
+                break;
+        }
+    }
+
 }
+
+

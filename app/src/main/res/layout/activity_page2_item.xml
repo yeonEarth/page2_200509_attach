@@ -62,7 +62,7 @@
                 android:layout_height="24dp"
                 android:layout_marginBottom="2dp"
                 android:layout_marginTop="5dp"
-                android:background="@drawable/circle_orange" />
+                android:background="@drawable/ic_icon_addroute" />
 
         </LinearLayout>
 
@@ -73,21 +73,23 @@
             android:layout_height="42dp"
             android:layout_weight="1">
 
-            //업/다운 버튼의 터치 영역을 넓히기 위한 빈 버튼
-            <Button
-                android:id="@+id/page2_1_updown_btn"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#FFffffff"/>
-
             <Button
                 android:id="@+id/updown_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginRight="9dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/ic_up_btn" />
+
+            //업/다운 버튼의 터치 영역을 넓히기 위한 빈 버튼
+            <Button
+                android:id="@+id/page2_1_updown_btn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:background="#00FFFFFF"/>
 
         </RelativeLayout>
 

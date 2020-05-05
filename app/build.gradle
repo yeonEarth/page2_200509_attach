@@ -34,4 +34,8 @@ dependencies {
     implementation "com.google.android.material:material:1.1.0-beta01"
     implementation 'com.google.android.material:material:1.1.0'
 
+    /*URL에서 이미지를 받기 위한 Glide*/
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+
 }
