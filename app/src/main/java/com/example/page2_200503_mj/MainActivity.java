@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for(int i =0; i < subject.length; i++) {
 
             if(subject[i].getId() == v.getId()) {
-                Intent intent = new Intent(this, Page2_1_MainActivity.class);
+                Intent intent = new Intent(this, Page2_MainActivity.class);
                 intent.putExtra("subject_name", subject_name[i]);
                 startActivity(intent);
 

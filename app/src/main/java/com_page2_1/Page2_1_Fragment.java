@@ -40,7 +40,7 @@ public class Page2_1_Fragment extends Fragment {
     String[] _sigunguCode = new String[station_code];    //txt에서 받은 시군구코드
     String  areaCode, sigunguCode;
     String returnResult, url;
-    String Url_front = "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory&fname=";
+    //String Url_front = "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory&fname=";
 
 
     String name_1[];  //returnResult를 줄바꿈 단위로 쪼개서 넣은 배열/ name_1[0]에는 한 관광지의 이름,url,contentId,위치가 다 들어가 있다.
@@ -115,7 +115,7 @@ public class Page2_1_Fragment extends Fragment {
             //txt 값 읽기
             settingList();
 
-            //전달된 역의 지역코드, 시군구코드 찾기
+            //전달된 관광지 주제의 지역코드, 시군구코드 찾기
             compareStation();
 
             //url에 들어갈 contentTypeId, cat1, cat2 코드를 찾기
@@ -165,36 +165,6 @@ public class Page2_1_Fragment extends Fragment {
 
 
 
-    //이 클래스는 어댑터와 서로 주고받으며 쓰는 클래스임
-    public class Recycler_item {
-        String image;
-        String title;
-        String contentviewID;
-        String type;
-
-        String getImage() {
-            return this.image;
-        }
-
-        String getTitle() {
-            return this.title;
-        }
-
-        String getContentviewID() {
-            return this.contentviewID;
-        }
-
-        String getType() {
-            return this.type;
-        }
-
-        Recycler_item(String image, String title, String contentviewID, String type) {
-            this.image = image;
-            this.title = title;
-            this.contentviewID = contentviewID;
-            this.type = type;
-        }
-    }
 
 
 

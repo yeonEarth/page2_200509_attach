@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".Page2_MainActivity"/>
         <activity android:name="com_page2_1.Page2_1_MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
