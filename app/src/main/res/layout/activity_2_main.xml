@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/ic_bg_photospot">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        // 로고
+        <TextView
+            android:id="@+id/main_logo"
+            android:layout_width="105dp"
+            android:layout_height="40dp"
+            android:background="#AAAAAA"
+            android:text="logo"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"/>
+
+        // 프로필 버튼
+        <Button
+            android:id="@+id/main_profile"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/round_gray"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="8dp"/>
+
+        // 메인 타이틀 텍스트
+        <TextView
+            android:id="@+id/page2_title"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:text="#역사"
+            android:fontFamily="@font/notosans_semibold"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:textSize="24dp"
+            android:layout_below="@+id/main_logo"
+            android:layout_marginTop="32dp"/>
+
+        //전체 카테고리 *가려서 안보임 수정필*
+        <Button
+            android:id="@+id/categoryBtn"
+            android:layout_width="97dp"
+            android:layout_height="31dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/main_logo"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/notosans_semibold"
+            android:background="@drawable/rectangle_purple"/>
+
+        //서브타이틀 텍스트
+        <TextView
+            android:id="@+id/page2_subtitle"
+            android:layout_width="300dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="121dp"
+            android:text="이런 코스는 어때요?"
+            android:textSize="16dp"
+            android:textColor="#000000"
+            android:letterSpacing="-0.03"
+            android:fontFamily="@font/notosans_extralight"/>
+
+        //page2 코스 레이아웃
+        <LinearLayout
+            android:id="@+id/page2_course"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/page2_subtitle"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/page2_course_1"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/box_round">
+
+                // 코스 레이아웃 넘버
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal">
+
+                    <Button
+                    android:id="@+id/page2_number"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/circle_mint"
+                    android:clickable="false"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:text="01"
+                    android:textAppearance="@style/recyclerview_number" />
+                </LinearLayout>
+
+                //코스 텍스트
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:gravity="center_horizontal|center_vertical">
+
+                    <TextView
+                        android:id="@+id/page2_course_txt1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="서울"
+                        android:textAppearance="@style/course_text"/>
+                    <View
+                        android:layout_width="5dp"
+                        android:layout_height="8dp"
+                        android:layout_marginLeft="14dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_vector_18"/>
+                    <TextView
+                        android:id="@+id/page2_course_txt2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="14dp"
+                        android:layout_gravity="center"
+                        android:text="서울"
+                        android:textAppearance="@style/course_text"/>
+                    <View
+                        android:layout_width="5dp"
+                        android:layout_height="8dp"
+                        android:layout_marginLeft="14dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_vector_18"/>
+                    <TextView
+                        android:id="@+id/page2_course_txt3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="14dp"
+                        android:layout_gravity="center"
+                        android:text="서울"
+                        android:textAppearance="@style/course_text"/>
+                    <View
+                        android:layout_width="5dp"
+                        android:layout_height="8dp"
+                        android:layout_marginLeft="14dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_vector_18"/>
+                    <TextView
+                        android:id="@+id/page2_course_txt4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="14dp"
+                        android:layout_gravity="center"
+                        android:text="서울"
+                        android:textAppearance="@style/course_text"/>
+
+                </LinearLayout>
+
+                // 코스 레이아웃 일정추가 버튼
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="42dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal|center_vertical">
+
+                    <Button
+                        android:id="@+id/page2_schedulePlus_btn"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/ic_icon_addroute" />
+
+                </LinearLayout>
+            </LinearLayout>
+        <LinearLayout
+            android:id="@+id/page2_course_2"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/box_round">
+
+            // 코스 레이아웃 넘버
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal">
+
+                <Button
+                    android:id="@+id/page2_number_2"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/circle_mint"
+                    android:clickable="false"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:text="02"
+                    android:textAppearance="@style/recyclerview_number" />
+            </LinearLayout>
+
+            //코스 텍스트
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:gravity="center_horizontal|center_vertical">
+
+                <TextView
+                    android:id="@+id/page2_course2_txt1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="서울"
+                    android:textAppearance="@style/course_text"/>
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="8dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ic_vector_18"/>
+                <TextView
+                    android:id="@+id/page2_course2_txt2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_gravity="center"
+                    android:text="서울"
+                    android:textAppearance="@style/course_text"/>
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="8dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ic_vector_18"/>
+                <TextView
+                    android:id="@+id/page2_course2_txt3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_gravity="center"
+                    android:text="서울"
+                    android:textAppearance="@style/course_text"/>
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="8dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ic_vector_18"/>
+                <TextView
+                    android:id="@+id/page2_course2_txt4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_gravity="center"
+                    android:text="서울"
+                    android:textAppearance="@style/course_text"/>
+
+            </LinearLayout>
+
+            // 코스 레이아웃 일정추가 버튼
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:gravity="center_horizontal|center_vertical">
+
+                <Button
+                    android:id="@+id/page2_schedulePlus_btn_2"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/ic_icon_addroute" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+        //코스더보기
+        <TextView
+            android:id="@+id/page2_courseMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/page2_subtitle"
+            android:layout_marginTop="139dp"
+            android:layout_alignParentRight="true"
+            android:text="코스더보기>"
+            android:clickable="true"
+            android:textAppearance="@style/courseMore_text" />
+
+        //관광지 api 텍스트
+        <TextView
+            android:id="@+id/page2_apiTitle"
+            android:layout_width="300dp"
+            android:layout_height="22dp"
+            android:layout_below="@+id/page2_courseMore"
+            android:layout_marginTop="16dp"
+            android:text="이런 관광지가 있어요"
+            android:textSize="16dp"
+            android:textColor="#000000"
+            android:letterSpacing="-0.03"
+            android:fontFamily="@font/notosans_extralight"/>
+
+        //관광지 api 레이아웃
+        <LinearLayout
+            android:id="@+id/page2_api_layout"
+            android:layout_width="match_parent"
+            android:layout_height="392dp"
+            android:layout_below="@id/page2_apiTitle"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/box_round">    //page2 관광지 사진 리싸이클러뷰
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/page2_fragment_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</ScrollView>
